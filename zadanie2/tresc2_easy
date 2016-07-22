@@ -1,0 +1,45 @@
+### Łatwa
+Rekurencyjne wyszukiwanie plików w danym katalogu i zrobienie histogramu w
+osobnym pliku tekstowym z częstotliwością (tzn. informacją jaką część
+wszystkich plików są pliki z danym rozszerzeniem) występowania plików z danym
+rozszerzeniem oraz sumą ich rozmiarów.
+
+#### Wymagania:
+ - odpowiednie formatowanie: kolumny wyrównanie do prawej strony, pierwsza
+   o szerokości 5 znaków, druga 15, trzecia 60 (w trzeciej 10 spacji przed
+   pierwszym znakiem `#`)
+ - katalog jak i nazwa pliku wyjściowego muszą być przyjmowane jako
+   argumenty programu (ułatwi to testowanie):
+       `./prog nazwa_katalogu nazwa_pliku_wyjsciowego`
+ - rozmiar podajemy w bajtach, po rozszerzeniu
+ - histogram ma składać się ze znaków `#` i ma mieć szerokość 50 znaków,
+   czyli jeśli w katalogu występują wyłącznie pliki z rozszerzeniem .txt,
+   obok tego rozszerzenie, po sumie rozmiarów tych plików, ma się znaleźć
+   50 znaków '#'.
+
+#### Przykład
+Załóżmy, że w podanym katalogu znajduje się 12 plików:
+```
+6 z rozszerzeniem  .txt o rozmiarze    5932B
+3 z rozszerzeniem .jpeg o rozmiarze   10000B
+2 z rozszerzeniem  .mp3 o rozmiarze  203151B
+1 z rozszerzeniem  .zip o rozmiarze   43131B
+```
+
+Rozwiązanie powinno zapisać do podanego pliku następujące dane (bez pierwszej
+linii, służy ona jedynie przedstawieniu szerokości kolumn, 5-15-60):
+
+```
+#####***************%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  txt          5932B                                   #########################
+ jpeg         10000B                                               #############
+  mp3        203151B                                                    ########
+  zip         43131B                                                        ####
+```
+
+#### Wyjaśnienie
+Plików z rozszerzeniem `.txt` jest **6**, co stanowi **50%** wszystkich, więc przy `txt`
+powinno być **25** znaków `#` (**50%** z **50**). Plików z rozszerzeniem `.mp3` jest **2**, co
+stanowi **16,(6)%** wszystkich plików, zatem przy tym rozszerzeniu powinno być **8**
+znaków `#` (**16,(6)%** z 50 to **8,(3)** - zaokrąglamy to więc w dół). Analogicznie dla
+pozostałych rozszerzeń.
