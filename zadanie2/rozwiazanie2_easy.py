@@ -22,7 +22,6 @@ def info(way, data): # jestesmy w folderze way
     return data
 output = {}
 way = sys.argv[1]
-print way
 output = info(way, output)
 count = 0
 for key in output:
