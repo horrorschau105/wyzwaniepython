@@ -21,8 +21,8 @@ def info(way, objects, card, checksums, curr_id): # jestesmy w folderze way
         elif os.path.isdir(path): # jest to folder
             objects, card, checksums, curr_id, size, count =info(path, objects,card, checksums, curr_id)
             sizeof +=size
-            countof += count
-        else:
+            countof += count+1 
+        else: #jest to cos innego (symlink..)
             size = os.path.getsize(path)
             sizeof+=size
             objects.append([curr_id, path, 'o', size])
@@ -33,11 +33,6 @@ def info(way, objects, card, checksums, curr_id): # jestesmy w folderze way
     return objects, card, checksums, curr_id+1, sizeof, countof
 
 folder_name, database_name = sys.argv[1:3]
-
-#conn=sqlite3.connect(database_name)
-#print "Database created and opened succesfully"
-
-# trzy tabele: wszystkiego, wszystkich folderów i wszystkich plików
 objects, card, checksums, count, sizeof, countof = info(folder_name, [],[],[], 0)
 
 for i in objects:
@@ -45,21 +40,6 @@ for i in objects:
 print ' ' 
 for i in card:
     print i
-
 print ' ' 
 for i in checksums:
     print i
-"""
-def line(key, tup, count, extlen= 5, sizelen= 15, histlen=30):
-    size, many = tup
-    return "{}{}{}{}".format(key.rjust(extlen),str(size).rjust(sizelen),10*' ',(int(round(histlen*many/count))*"#").rjust(histlen))
-
-output = {}
-way = "F"
-output = info(way, output)
-count = 0
-for key in output:
-    count+=output[key][1]
-for key in output:
-    print line(key, output[key],count)
-"""
