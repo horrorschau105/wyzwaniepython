@@ -14,8 +14,8 @@ def info(way, objects, card, checksums, curr_id): # jestesmy w folderze way
         if os.path.isfile(path): # jest to plik
             size = os.path.getsize(path)
             sizeof+=size
-            objects.append([curr_id, path, 'f', size])
-            checksums.append([curr_id, hashlib.md5(path).hexdigest()])
+            objects.append((curr_id, path, 'f', size))
+            checksums.append((curr_id, hashlib.md5(path).hexdigest()))
             curr_id+=1
             countof+=1
         elif os.path.isdir(path): # jest to folder
@@ -25,21 +25,22 @@ def info(way, objects, card, checksums, curr_id): # jestesmy w folderze way
         else: #jest to cos innego (symlink..)
             size = os.path.getsize(path)
             sizeof+=size
-            objects.append([curr_id, path, 'o', size])
+            objects.append((curr_id, path, 'o', size))
             curr_id+=1
             countof+=1
-    objects.append([curr_id, way, 'd', sizeof])
-    card.append([curr_id, countof])
+    objects.append((curr_id, way, 'd', sizeof))
+    card.append((curr_id, countof))
     return objects, card, checksums, curr_id+1, sizeof, countof
 
 folder_name, database_name = sys.argv[1:3]
 objects, card, checksums, count, sizeof, countof = info(folder_name, [],[],[], 0)
-
-for i in objects:
-    print i
-print ' ' 
-for i in card:
-    print i
-print ' ' 
-for i in checksums:
-    print i
+conn = sqlite3.connect(database_name)
+c = conn.cursor()
+c.execute("CREATE TABLE objects(Id INT, Path TEXT, Type CHAR, Size INT)")
+c.execute("CREATE TABLE cardinality(Id INT, Nbr_of_elements INT)")
+c.execute("CREATE TABLE checksums(Id INT, Checksum TEXT)")
+c.executemany('INSERT INTO objects VALUES (?,?,?,?)', objects)
+c.executemany('INSERT INTO cardinality VALUES (?,?)', card)
+c.executemany('INSERT INTO checksums VALUES (?,?)', checksums)
+conn.commit()
+conn.close()
