@@ -36,9 +36,14 @@ folder_name, database_name = sys.argv[1:3]
 objects, card, checksums, count, sizeof, countof = info(folder_name, [],[],[], 0)
 conn = sqlite3.connect(database_name)
 c = conn.cursor()
-c.execute("CREATE TABLE objects(Id INT, Path TEXT, Type CHAR, Size INT)")
-c.execute("CREATE TABLE cardinality(Id INT, Nbr_of_elements INT)")
-c.execute("CREATE TABLE checksums(Id INT, Checksum TEXT)")
+c.executescript("""
+    DROP TABLE IF EXISTS objects;
+    DROP TABLE IF EXISTS cardinality;
+    DROP TABLE IF EXISTS checksums;
+    CREATE TABLE objects(Id INT, Path TEXT, Type CHAR, Size INT);
+    CREATE TABLE cardinality(Id INT, Nbr_of_elements INT);
+    CREATE TABLE checksums(Id INT, Checksum TEXT);
+""")
 c.executemany('INSERT INTO objects VALUES (?,?,?,?)', objects)
 c.executemany('INSERT INTO cardinality VALUES (?,?)', card)
 c.executemany('INSERT INTO checksums VALUES (?,?)', checksums)
