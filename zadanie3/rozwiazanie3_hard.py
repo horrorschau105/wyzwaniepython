@@ -7,7 +7,11 @@ from shutil import copy2, move, rmtree
 import datetime
 from time import mktime, gmtime
 from Tkinter import *
+import rozwiazanie3_hard as my # dx
 import tkMessageBox
+
+gv_path = getcwd()
+
 def getinfo(path):
     typ = 'inny'
     size = ''
@@ -45,11 +49,40 @@ def get_size(start_path):
     return (str(total_size))+('B'), str(count)
 
 class SampleApp(Tk):
-    path = ""
+    global gv_path
+    path = gv_path
+    def mv(self):
+        move(self.entry1.get(), self.entry2.get())
+        self.refresh()
+    def cp(self):
+        copy2(self.entry1.get(), self.entry2.get())
+        self.refresh()
+    def info(self):
+        tkMessageBox.showinfo("Info", getinfo(self.entry1.get()))
+    def rm(self):
+        if isfile(self.entry1.get()):
+            remove(self.entry1.get())
+        else:
+            rmtree(self.entry1.get())
+        self.refresh()
+    def cd(self):
+        self.path = self.entry1.get()
+        self.refresh()
+    def touch(self):
+        open(join(self.path, self.entry1.get()), 'w+')
+        self.refresh()
+    def refresh(self):
+        global gv_path
+        gv_path = self.path
+        self.destroy()
+        print 123
+        self = my.SampleApp(gv_path)
     def __init__(self, curr_path):
+        global gv_path
         path = curr_path
+        gv_path = path
         Tk.__init__(self)
-        self.geometry("368x256")
+        self.geometry("368x256+100+100")
         self.here = Label(self, text="You are here: "+path)
         self.here.pack()
         self.here.place(x=0, y=0)
@@ -101,24 +134,7 @@ class SampleApp(Tk):
 
         self.listbox.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.listbox.yview)
-    def mv(self):
-        move(self.entry1.get(), self.entry2.get())
-    def cp(self):
-        copy2(self.entry1.get(), self.entry2.get())
-    def info(self):
-        tkMessageBox.showinfo("Info", getinfo(self.entry1.get()))
-    def rm(self):
-        if isfile(self.entry1.get()):
-            remove(self.entry1.get())
-        else:
-            rmtree(self.entry1.get())
-    def cd(self):
-        self.path = self.entry1.get()
-    def touch(self):
-        open(join(self.path, self.entry1.get()), 'w+')
-    def on_button(self):
-        print(self.entry2.get())
-
-app = SampleApp(getcwd())
-app.after(500, app.update())
+    
+        
+app = SampleApp(gv_path)
 app.mainloop()
