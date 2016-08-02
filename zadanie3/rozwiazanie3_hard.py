@@ -1,31 +1,72 @@
 #wyzwaniepython ZADANIE 3 (HARD)
 #03-08-2016
 #autor: @Dewastators
-import os
-from os import listdir
+from os.path import join, getsize, getctime, getmtime, isfile, isdir, exists
+from os import getcwd, walk, listdir, remove
+from shutil import copy2, move, rmtree
+import datetime
+from time import mktime, gmtime
 from Tkinter import *
+import tkMessageBox
+def getinfo(path):
+    typ = 'inny'
+    size = ''
+    count = ''
+    way = path
+    ct = datetime.datetime.fromtimestamp(mktime(gmtime(getctime(path)))).date()
+    mt = datetime.datetime.fromtimestamp(mktime(gmtime(getmtime(path)))).date()
+    if isfile(path):
+        typ = 'plik'
+        size = (str(getsize(path)))+('B')
+        return '\n'.join(['typ: '+typ, 'sciezka: '+(way),
+                          'rozmiar: '+(size), 
+                          'ctime '+('-'.join([str(ct.year), str(ct.month), str(ct.day)])),
+                          'mtime '+('-'.join([str(mt.year), str(mt.month), str(mt.day)]))])
+    if isdir(path):
+        typ = 'katalog'
+        size, count = get_size(path)
+        return '\n'.join(['typ: '+(typ), 'sciezka: '+(way),
+                          'rozmiar: '+(size), 'liczba_plikow: '+(count),
+                          'ctime '+('-'.join([str(ct.year), str(ct.month), str(ct.day)])),
+                          'mtime '+('-'.join([str(mt.year), str(mt.month), str(mt.day)]))])
+    
+    return '\n'.join(
+        ['typ: '+(typ), 'sciezka: '+(way),'rozmiar: '+(size), 
+                          'ctime '+('-'.join([str(ct.year), str(ct.month), str(ct.day)])),
+                          'mtime '+('-'.join([str(mt.year), str(mt.month), str(mt.day)]))])
+def get_size(start_path):
+    total_size = 0
+    count = 0
+    for dirpath, dirnames, filenames in walk(start_path):
+        for f in filenames:
+            fp = join(dirpath, f)
+            total_size += getsize(fp)
+            count +=1
+    return (str(total_size))+('B'), str(count)
 
 class SampleApp(Tk):
+    path = ""
     def __init__(self, curr_path):
+        path = curr_path
         Tk.__init__(self)
         self.geometry("368x256")
-        self.here = Label(self, text="You are here: "+curr_path)
+        self.here = Label(self, text="You are here: "+path)
         self.here.pack()
         self.here.place(x=0, y=0)
         
-        self.button1 = Button(self, text="touch", command=self.on_button)
+        self.button1 = Button(self, text="touch", command= self.touch)
         self.button1.pack()
         self.button1.place(x=0, y=20)
         
-        self.button2 = Button(self, text="cd", command=self.on_button)
+        self.button2 = Button(self, text="cd", command= self.cd)
         self.button2.pack()
         self.button2.place(x=42, y=20)
         
-        self.button3 = Button(self, text="rm", command=self.on_button)
+        self.button3 = Button(self, text="rm", command=self.rm)
         self.button3.pack()
         self.button3.place(x=66, y=20)
         
-        self.button4 = Button(self, text="info", command=self.on_button)
+        self.button4 = Button(self, text="info", command=self.info)
         self.button4.pack()
         self.button4.place(x=92, y=20)
 
@@ -34,11 +75,11 @@ class SampleApp(Tk):
         self.entry1.pack()
         self.entry1.place(x=125, y=20, height=25)
 
-        self.button5 = Button(self, text="cp", command=self.on_button)
+        self.button5 = Button(self, text="cp", command=self.cp)
         self.button5.pack()
         self.button5.place(x=72, y=46)
 
-        self.button6 = Button(self, text="mv", command=self.on_button)
+        self.button6 = Button(self, text="mv", command=self.mv)
         self.button6.pack()
         self.button6.place(x=96, y=46)
 
@@ -60,10 +101,24 @@ class SampleApp(Tk):
 
         self.listbox.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.listbox.yview)
-
-
+    def mv(self):
+        move(self.entry1.get(), self.entry2.get())
+    def cp(self):
+        copy2(self.entry1.get(), self.entry2.get())
+    def info(self):
+        tkMessageBox.showinfo("Info", getinfo(self.entry1.get()))
+    def rm(self):
+        if isfile(self.entry1.get()):
+            remove(self.entry1.get())
+        else:
+            rmtree(self.entry1.get())
+    def cd(self):
+        self.path = self.entry1.get()
+    def touch(self):
+        open(join(self.path, self.entry1.get()), 'w+')
     def on_button(self):
         print(self.entry2.get())
 
-app = SampleApp(os.getcwd())
+app = SampleApp(getcwd())
+app.after(500, app.update())
 app.mainloop()
