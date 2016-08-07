@@ -1,0 +1,5 @@
+
+Napisz program który przetworzy tekst Markdown na HTML. 
+Jeden wątek pobiera wpisany tekst i wrzuca go do kolejki a drugi wątek 
+pobiera tekst z kolejki i przetwarza na html który zapisze do pliku. 
+Muszą wystąpić wszystkie elementy Markdown z tego kodu na Wikipedii.
